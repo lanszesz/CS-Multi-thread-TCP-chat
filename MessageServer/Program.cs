@@ -187,8 +187,8 @@ namespace MessageServer
             {
                 // Connection lost to client, prepare to exit
                 setTextColor(1);
-                Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ") + "Lost connection to client");
-                Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ") + "Press any key to exit...");
+                Log(DateTime.Now.ToString("[HH:mm:ss] ") + "Lost connection to client");
+                Log(DateTime.Now.ToString("[HH:mm:ss] ") + "Press any key to exit...");
                 Console.ReadLine();
             }
         }
@@ -346,7 +346,9 @@ namespace MessageServer
 
         public void Logo()
         {
+            // Small Slant
             Console.Clear();
+            Log("   __  ___                          ____                    ");
             Log("  /  |/  /__ ___ ___ ___ ____ ____ / __/__ _____  _____ ____");
             Log(" / /|_/ / -_|_-<(_-</ _ `/ _ `/ -_)\\ \\/ -_) __/ |/ / -_) __/");
             Log("/_/  /_/\\__/___/___/\\_,_/\\_, /\\__/___/\\__/_/  |___/\\__/_/   ");
