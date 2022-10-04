@@ -335,6 +335,7 @@ namespace MessageServer
             }
         }
 
+        // For the orange flash on the taskbar icon
         [DllImport("user32.dll")]
         static extern bool FlashWindow(IntPtr hwnd, bool bInvert);
     }
