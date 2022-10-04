@@ -3,6 +3,8 @@ using System.Net.Sockets;
 using System.Net;
 using System.Text;
 using System.Diagnostics;
+using System.Runtime.InteropServices;
+using System.Threading;
 
 namespace MessageServer
 {
@@ -19,6 +21,8 @@ namespace MessageServer
         private string name;
         private string partnerName;
 
+        IntPtr handle;
+
         public MessageServer(string serverIP, int serverPort, string name, string welcomeMessage)
         {
             this.serverIP = serverIP;
@@ -27,7 +31,14 @@ namespace MessageServer
             this.name = name;
 
             server = new TcpListener(IPAddress.Any, serverPort);
+            handle = Process.GetCurrentProcess().MainWindowHandle;
+
+            Console.Title = "tcpChat - Server";
         }
+
+
+        [DllImport("user32.dll")]
+        static extern bool FlashWindow(IntPtr hwnd, bool bInvert);
 
         public void SendMessage(string message)
         {
@@ -107,7 +118,26 @@ namespace MessageServer
 
                 status = true;
 
-                Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ") + partnerName + ": " + ReceiveMessage());
+                string receivedMessage = DateTime.Now.ToString("[HH:mm:ss] ") + partnerName + ": " + ReceiveMessage() + "\n";
+
+                // for cool text effect
+                typeWriter(receivedMessage);
+
+                // orange light on taskbar if window is not in focus
+                FlashWindow(handle, true);
+            }
+        }
+
+        public void typeWriter(string outputText)
+        {
+            for (int i = 0; i < outputText.Length; i++)
+            {
+                Console.Write(outputText[i]);
+                Thread.Sleep(10);
+                if (i == 10)
+                {
+                    outputText += "\n           ";
+                }
             }
         }
 
