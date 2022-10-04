@@ -29,13 +29,17 @@ namespace MessageServer
         // The server sends a welcome message to the client upon connection
         private string welcomeMessage;
 
+        // For the log filename
+        private string timestamp;
+
         // For the orange flash on the taskbar icon
         IntPtr handle;
 
         public MessageServer()
         {
-            handle = Process.GetCurrentProcess().MainWindowHandle;
             Console.Title = "tcpChat - Server&Client";
+            handle = Process.GetCurrentProcess().MainWindowHandle;
+            timestamp = DateTime.Now.ToString("yyyy-MM-dd-HH-mm-ss");
         }
 
         // Goes through everything until the conversation can start
@@ -105,9 +109,9 @@ namespace MessageServer
         public bool Handshaking()
         {
             // Status text
-            Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ") + "Server started");
-            Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ") + "Your name: " + name + " Listening Port: " + listeningPort);
-            Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ") + "Waiting for connection...");
+            Log(DateTime.Now.ToString("[HH:mm:ss] ") + "Server started");
+            Log(DateTime.Now.ToString("[HH:mm:ss] ") + "Your name: " + name + " Listening Port: " + listeningPort);
+            Log(DateTime.Now.ToString("[HH:mm:ss] ") + "Waiting for connection...");
 
             // Waiting for client to connect
             client = server.AcceptTcpClient();
@@ -123,10 +127,10 @@ namespace MessageServer
             SendMessage(welcomeMessage);
 
             // Status text
-            Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ") + "Connection established with: " + client.Client.RemoteEndPoint + " (" + partnerName + ")");
-            Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ") + "Welcome message '" + welcomeMessage + "' sent");
-            Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ") + "Conversation started: " + DateTime.Now.ToString());
-            Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ") + "Awaiting first response...");
+            Log(DateTime.Now.ToString("[HH:mm:ss] ") + "Connection established with: " + client.Client.RemoteEndPoint + " (" + partnerName + ")");
+            Log(DateTime.Now.ToString("[HH:mm:ss] ") + "Welcome message '" + welcomeMessage + "' sent");
+            Log(DateTime.Now.ToString("[HH:mm:ss] ") + "Conversation started: " + DateTime.Now.ToString());
+            Log(DateTime.Now.ToString("[HH:mm:ss] ") + "Awaiting first response...");
 
             // This means the connection has been established, we can continue, see Run(); method
             return true;
@@ -147,10 +151,18 @@ namespace MessageServer
                     {
                         // We are the senders now!
 
-                        Console.Write((DateTime.Now.ToString("[HH:mm:ss] ") + name + ": "));
+                        // We didn't send the timestamp to the client
+                        // So we have a finalMessage for e.g: [17:42:57] lanses: HI! <- we log this
+                        string finalMessage = DateTime.Now.ToString("[HH:mm:ss] ") + name + ": ";
+
+                        Console.Write(finalMessage);
                         string message = Console.ReadLine();
 
+                        // And an actual message we send, in this example: "HI!"
                         SendMessage(message);
+
+                        finalMessage += message;
+                        Log(finalMessage + '\n', true);
 
                         status = false;
                         continue;
@@ -303,9 +315,27 @@ namespace MessageServer
             return receivedMessage;
         }
 
+        // Logs everything in a .txt then WriteLine
+        public void Log(string message)
+        {
+            Console.WriteLine(message);
+
+            string filename = "log_" + timestamp + ".txt";
+            File.AppendAllText(filename, message + '\n');
+        }
+
+        // Logs everything but without WriteLine
+        public void Log(string message, bool noWriteLine)
+        {
+            string filename = "log_" + timestamp + ".txt";
+            File.AppendAllText(filename, message);
+        }
+
         // Retro terminal effect for outputting received messages
         public void typeWriter(string outputText)
         {
+            Log(outputText, true);
+
             for (int i = 0; i < outputText.Length; i++)
             {
                 Console.Write(outputText[i]);
@@ -316,10 +346,10 @@ namespace MessageServer
         public void Logo()
         {
             Console.Clear();
-            Console.WriteLine("  /  |/  /__ ___ ___ ___ ____ ____ / __/__ _____  _____ ____");
-            Console.WriteLine(" / /|_/ / -_|_-<(_-</ _ `/ _ `/ -_)\\ \\/ -_) __/ |/ / -_) __/");
-            Console.WriteLine("/_/  /_/\\__/___/___/\\_,_/\\_, /\\__/___/\\__/_/  |___/\\__/_/   ");
-            Console.WriteLine("                        /___/                              ");
+            Log("  /  |/  /__ ___ ___ ___ ____ ____ / __/__ _____  _____ ____");
+            Log(" / /|_/ / -_|_-<(_-</ _ `/ _ `/ -_)\\ \\/ -_) __/ |/ / -_) __/");
+            Log("/_/  /_/\\__/___/___/\\_,_/\\_, /\\__/___/\\__/_/  |___/\\__/_/   ");
+            Log("                        /___/                              ");
         }
 
         public void setTextColor(byte color)
