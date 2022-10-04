@@ -60,6 +60,7 @@ namespace MessageServer
 
             if (Handshaking())
             {
+                // Green
                 setTextColor(2);
                 MessageLoop();
             }
