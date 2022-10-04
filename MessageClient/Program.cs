@@ -111,6 +111,25 @@ namespace MessageServer
             }
         }
 
+        public void Setup()
+        {
+            Console.Write("Your name: ");
+            name = Console.ReadLine();
+
+            Console.Write("Server IP address: ");
+            string ip = Console.ReadLine();
+            if (ip == "localhost")
+            {
+                ipAddress = IPAddress.Parse("127.0.0.1");
+            }
+            else ipAddress = IPAddress.Parse(ip);
+
+            Console.Write("Server PORT: ");
+            serverPort = int.Parse(Console.ReadLine());
+
+            ipEndPoint = new IPEndPoint(ipAddress, serverPort);
+        }
+
         public void Run()
         {
             Console.WriteLine("  /  |/  /__ ___ ___ ___ ____ ____ / ___/ (_)__ ___  / /_");
@@ -118,11 +137,7 @@ namespace MessageServer
             Console.WriteLine("/_/  /_/\\__/___/___/\\_,_/\\_, /\\__/\\___/_/_/\\__/_//_/\\__/ ");
             Console.WriteLine("                        /___/                            ");
 
-            Console.Write("Server IP address: ");
-            ipAddress = IPAddress.Parse(Console.ReadLine());
-            Console.Write("Server PORT: ");
-            serverPort = int.Parse(Console.ReadLine());
-            ipEndPoint = new IPEndPoint(ipAddress, serverPort);
+            Setup();
 
             setTextColor(1);
 

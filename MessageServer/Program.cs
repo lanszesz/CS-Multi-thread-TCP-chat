@@ -10,32 +10,30 @@ namespace MessageServer
 {
     public class MessageServer
     {
-        private readonly string serverIP;
-        private readonly int serverPort;
+        private int listeningPort;
         private string welcomeMessage;
 
         private TcpListener server;
         private TcpClient client;
         private NetworkStream stream;
+        private IPAddress listeningIP;
 
         private string name;
         private string partnerName;
 
         IntPtr handle;
 
-        public MessageServer(string serverIP, int serverPort, string name, string welcomeMessage)
+        public MessageServer(int listeningPort, string name, string welcomeMessage)
         {
-            this.serverIP = serverIP;
-            this.serverPort = serverPort;
+            this.listeningPort = listeningPort;
             this.welcomeMessage = welcomeMessage;
             this.name = name;
 
-            server = new TcpListener(IPAddress.Any, serverPort);
+            server = new TcpListener(IPAddress.Any, listeningPort);
             handle = Process.GetCurrentProcess().MainWindowHandle;
 
-            Console.Title = "tcpChat - Server";
+            Console.Title = "tcpChat - Server&Client";
         }
-
 
         [DllImport("user32.dll")]
         static extern bool FlashWindow(IntPtr hwnd, bool bInvert);
@@ -64,6 +62,8 @@ namespace MessageServer
         {
             server.Start();
 
+            Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ") + "Server started");
+            Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ") + "Your name: " + name + " Listening for: " + listeningIP + " Listening Port: " + listeningPort);
             Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ") + "Waiting for connection...");
 
             client = server.AcceptTcpClient();
@@ -102,29 +102,39 @@ namespace MessageServer
         {
             bool status = false; // false - receiving || true - sending 
 
-            while (client.Connected)
+            try
             {
-                if (status)
+                while (client.Connected)
                 {
-                    status = false;
+                    if (status)
+                    {
+                        status = false;
 
-                    Console.Write((DateTime.Now.ToString("[HH:mm:ss] ") + name + ": "));
-                    string message = Console.ReadLine();
+                        Console.Write((DateTime.Now.ToString("[HH:mm:ss] ") + name + ": "));
+                        string message = Console.ReadLine();
 
-                    SendMessage(message);
+                        SendMessage(message);
 
-                    continue;
+                        continue;
+                    }
+
+                    status = true;
+
+                    string receivedMessage = DateTime.Now.ToString("[HH:mm:ss] ") + partnerName + ": " + ReceiveMessage() + "\n";
+
+                    // for cool text effect
+                    typeWriter(receivedMessage);
+
+                    // orange light on taskbar if window is not in focus
+                    FlashWindow(handle, true);
                 }
-
-                status = true;
-
-                string receivedMessage = DateTime.Now.ToString("[HH:mm:ss] ") + partnerName + ": " + ReceiveMessage() + "\n";
-
-                // for cool text effect
-                typeWriter(receivedMessage);
-
-                // orange light on taskbar if window is not in focus
-                FlashWindow(handle, true);
+            }
+            catch (Exception)
+            {
+                setTextColor(1);
+                Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ") + "Lost connection to client");
+                Console.WriteLine(DateTime.Now.ToString("[HH:mm:ss] ") + "Press any key to exit...");
+                Console.ReadLine();
             }
         }
 
@@ -134,19 +144,125 @@ namespace MessageServer
             {
                 Console.Write(outputText[i]);
                 Thread.Sleep(10);
-                if (i == 10)
-                {
-                    outputText += "\n           ";
-                }
             }
         }
 
-        public void Run()
+        public void LoadOrSetup()
+        {
+            Console.Write("Load last configuration? (y/n): ");
+
+            string answer = Console.ReadLine();
+            switch (answer)
+            {
+                case "y":
+                    Load();
+                    break;
+                case "Y":
+                    Load();
+                    break;
+                case "n":
+                    Setup();
+                    break;
+                case "N":
+                    Setup();
+                    break;
+                default:
+                    Console.Clear();
+                    Logo();
+                    LoadOrSetup();
+                    break;
+            }
+        }
+
+        public void Load()
+        {
+            Console.WriteLine("load");
+        }
+
+        public void Setup()
+        {
+            bool ok = false;
+
+            Console.Clear();
+            Logo();
+
+            Console.WriteLine("Hi! This program works as a Server and a Client at the same time.");
+            Console.Write("Your name: ");
+            name = Console.ReadLine();
+
+            while (!ok)
+            {
+                Console.Write("Listening PORT: ");
+                try
+                {
+                    listeningPort = int.Parse(Console.ReadLine());
+                    ok = true;
+                }
+                catch (Exception)
+                {
+                    Console.Clear();
+                    Logo();
+                }
+            }
+
+            ok = false;
+
+            while (!ok)
+            {
+                Console.WriteLine("Listen for a single client IP address or 'any'?");
+                Console.Write("Type in an IP or the keyword 'any': ");
+                string ip = Console.ReadLine();
+
+                switch (ip)
+                {
+                    case "any":
+                        try
+                        {
+                            listeningIP = IPAddress.Any;
+                            server = new TcpListener(listeningIP, listeningPort);
+                            ok = true;
+                        }
+                        catch (Exception) { Console.Clear(); Logo(); }
+                        break;
+                    case "localhost":
+                        try
+                        {
+                            listeningIP = IPAddress.Parse("127.0.0.1");
+                            server = new TcpListener(listeningIP, listeningPort);
+                            ok = true;
+                        }
+                        catch (Exception) { Console.Clear(); Logo(); }
+                        break;
+                    default:
+                        try
+                        {
+                            listeningIP = IPAddress.Parse(ip);
+                            server = new TcpListener(listeningIP, listeningPort);
+                            ok = true;
+                        }
+                        catch (Exception) { Console.Clear(); Logo(); }
+                        break;
+                }
+            }
+
+
+            Console.Clear();
+            Logo();
+        }
+
+        public void Logo()
         {
             Console.WriteLine("  /  |/  /__ ___ ___ ___ ____ ____ / __/__ _____  _____ ____");
             Console.WriteLine(" / /|_/ / -_|_-<(_-</ _ `/ _ `/ -_)\\ \\/ -_) __/ |/ / -_) __/");
             Console.WriteLine("/_/  /_/\\__/___/___/\\_,_/\\_, /\\__/___/\\__/_/  |___/\\__/_/   ");
             Console.WriteLine("                        /___/                              ");
+        }
+
+        public void Run()
+        {
+            Logo();
+
+            LoadOrSetup();
 
             setTextColor(1);
 
@@ -162,7 +278,7 @@ namespace MessageServer
     {
         static void Main(string[] args)
         {
-            MessageServer messageServer = new MessageServer("asd", 7676, "ErwinServer", "Hi! You are connected!");
+            MessageServer messageServer = new MessageServer(7676, "ErwinServer", "Hi! You are connected!");
             messageServer.Run();
         }
     }
