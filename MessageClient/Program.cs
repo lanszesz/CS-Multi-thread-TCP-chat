@@ -60,7 +60,7 @@ namespace MessageClient
                 catch (Exception)
                 {
                     Console.WriteLine("Couldn't connect to server");
-                    Console.WriteLine("Press any key to retry...");
+                    Console.WriteLine("Press enter to retry...");
                     Console.ReadLine();
                 }
             }
@@ -191,8 +191,8 @@ namespace MessageClient
             {
                 // Connection lost to server, prepare to exit
                 setTextColor(1);
-                Log(DateTime.Now.ToString("[HH:mm:ss] ") + "Lost connection to client");
-                Log(DateTime.Now.ToString("[HH:mm:ss] ") + "Press any key to exit...");
+                Log(DateTime.Now.ToString("[HH:mm:ss] ") + "Lost connection to server");
+                Log(DateTime.Now.ToString("[HH:mm:ss] ") + "Press enter to exit...");
                 Console.ReadLine();
             }
         }
@@ -221,7 +221,7 @@ namespace MessageClient
             catch (Exception)
             {
                 Console.WriteLine("Someone modified the settings_client.txt incorrectly!");
-                Console.WriteLine("Press any key to continue...");
+                Console.WriteLine("Press enter to continue...");
                 Console.ReadLine();
 
                 Console.Clear();
@@ -240,7 +240,7 @@ namespace MessageClient
             catch (Exception)
             {
                 Console.WriteLine("Client couldn't be created");
-                Console.WriteLine("Press any key to continue...");
+                Console.WriteLine("Press enter to continue...");
                 Console.ReadLine();
 
                 Console.Clear();
@@ -315,7 +315,7 @@ namespace MessageClient
             catch (Exception)
             {
                 Console.WriteLine("Couldn't save settings");
-                Console.WriteLine("Press any key to continue without saving...");
+                Console.WriteLine("Press enter to continue without saving...");
             }
         }
 

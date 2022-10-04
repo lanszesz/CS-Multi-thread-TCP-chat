@@ -188,7 +188,7 @@ namespace MessageServer
                 // Connection lost to client, prepare to exit
                 setTextColor(1);
                 Log(DateTime.Now.ToString("[HH:mm:ss] ") + "Lost connection to client");
-                Log(DateTime.Now.ToString("[HH:mm:ss] ") + "Press any key to exit...");
+                Log(DateTime.Now.ToString("[HH:mm:ss] ") + "Press enter to exit...");
                 Console.ReadLine();
             }
         }
@@ -217,7 +217,7 @@ namespace MessageServer
             catch (Exception)
             {
                 Console.WriteLine("Someone modified the settings.txt incorrectly!");
-                Console.WriteLine("Press any key to continue...");
+                Console.WriteLine("Press enter to continue...");
                 Console.ReadLine();
 
                 Console.Clear();
@@ -235,7 +235,7 @@ namespace MessageServer
             catch (Exception)
             {
                 Console.WriteLine("Server couldn't be started");
-                Console.WriteLine("Press any key to continue...");
+                Console.WriteLine("Press enter to continue...");
                 Console.ReadLine();
 
                 Console.Clear();
@@ -288,7 +288,7 @@ namespace MessageServer
             catch (Exception)
             {
                 Console.WriteLine("Couldn't save settings");
-                Console.WriteLine("Press any key to continue without saving...");
+                Console.WriteLine("Press enter to continue without saving...");
             }
         }
 
