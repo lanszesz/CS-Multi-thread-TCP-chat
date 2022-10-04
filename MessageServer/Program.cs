@@ -26,6 +26,7 @@ namespace MessageServer
 
         private string name;
         private string partnerName;
+        // The server sends a welcome message to the client upon connection
         private string welcomeMessage;
 
         // For the orange flash on the taskbar icon
