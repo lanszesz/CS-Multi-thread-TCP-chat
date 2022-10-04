@@ -53,6 +53,8 @@ namespace MessageServer
 
             CreateServer();
 
+            Console.Title += "@" + name;
+
             server.Start();
 
             // Magenta

@@ -48,6 +48,8 @@ namespace MessageClient
 
             CreateClient();
 
+            Console.Title += "@" + name;
+
             // Connecting to server
             bool ok = false;
             while(!ok)
