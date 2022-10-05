@@ -167,13 +167,16 @@ namespace MessageServer
                         string finalMessage = DateTime.Now.ToString("[HH:mm:ss] ") + name + ": ";
 
                         Console.Write(finalMessage);
-                        string message = Console.ReadLine();
+
+                        // Read method's comment
+                        string message = ReadAndReturnValidMessage(Console.CursorLeft, Console.CursorTop);
 
                         // And an actual message we send, in this example: "HI!"
                         SendMessage(message);
 
                         finalMessage += message;
 
+                        // Read method's comment
                         PrettifyText(cursorX, cursorY, finalMessage);
 
                         status = false;
@@ -202,6 +205,20 @@ namespace MessageServer
                 Log(DateTime.Now.ToString("[HH:mm:ss] ") + "Press enter to exit...");
                 Console.ReadLine();
             }
+        }
+
+        // Empty messages (enter) can crash/glitch the program
+        private string ReadAndReturnValidMessage(int cursorLeft, int cursorTop)
+        {
+            string message = "";
+
+            while (message == "")
+            {
+                message = Console.ReadLine();
+                Console.SetCursorPosition(cursorLeft, cursorTop);
+            }
+
+            return message;
         }
 
         // name, listeningPort, welcomeMessage can be loaded from settings.txt
