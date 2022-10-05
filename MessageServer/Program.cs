@@ -53,6 +53,7 @@ namespace MessageServer
             // You can only switch their order here, which is not recommended
             Logo();
 
+            // sets - name, listeningPort, welcomeMessage
             LoadOrSetup();
 
             CreateServer();

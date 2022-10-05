@@ -12,13 +12,20 @@ namespace MessageClient
 {
     public class MessageClient
     {
-        private int serverPort;
         // Welcome Message that will be received from the server
         private string welcomeMessage;
 
-        IPAddress ipAddress;
-        IPEndPoint ipEndPoint;
-        TcpClient client;
+        // ipEndPoint = new IPEndPoint(ipAddress, serverPort);
+        private IPAddress ipAddress;
+        private int serverPort;
+
+        // client.Connect(ipEndPoint);
+        private IPEndPoint ipEndPoint;
+
+        // The client that will connect to us. In this case it's the serveer and the client at the same time
+        private TcpClient client;
+
+        // For writing and reading messages
         private NetworkStream stream;
 
         private string name;
@@ -48,6 +55,7 @@ namespace MessageClient
             // You can only switch their order here, which is not recommended
             Logo();
 
+            // Sets name, ipAddress, serverPort
             LoadOrSetup();
 
             CreateClient();
