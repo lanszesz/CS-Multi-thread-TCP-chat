@@ -27,6 +27,9 @@ namespace MessageClient
         // For the log filename
         private string timestamp;
 
+        // For output and log formatting purposes
+        private int lineWidth;
+
         // For the orange flash on the taskbar icon
         IntPtr handle;
 
@@ -35,6 +38,7 @@ namespace MessageClient
             Console.Title = "tcpChat - Client";
             handle = Process.GetCurrentProcess().MainWindowHandle;
             timestamp = DateTime.Now.ToString("yyyy-MM-dd-HH-mm-ss");
+            lineWidth = 100;
         }
 
         // Goes through everything until the conversation can start
@@ -160,6 +164,9 @@ namespace MessageClient
 
                         // We didn't send the timestamp to the client
                         // So we have a finalMessage for e.g: [17:42:57] lanses: HI! <- we log this
+                        int cursorX = Console.CursorLeft;
+                        int cursorY = Console.CursorTop;
+
                         string finalMessage = DateTime.Now.ToString("[HH:mm:ss] ") + name + ": ";
 
                         Console.Write(finalMessage);
@@ -169,7 +176,8 @@ namespace MessageClient
                         SendMessage(message);
 
                         finalMessage += message;
-                        Log(finalMessage + '\n', true);
+
+                        PrettifyText(cursorX, cursorY, finalMessage);
 
                         status = false;
                         continue;
@@ -364,13 +372,54 @@ namespace MessageClient
         // Retro terminal effect for outputting received messages
         public void typeWriter(string outputText)
         {
-            Log(outputText, true);
+            // We log the formatted string, see PrettifyText()'s comment
+            string log = "";
 
-            for (int i = 0; i < outputText.Length; i++)
+            for (int i = 0, j = 1; i < outputText.Length; i++, j++)
             {
                 Console.Write(outputText[i]);
+                log += outputText[i];
+
                 Thread.Sleep(10);
+
+                // New line and left padding for long texts
+                if (j % lineWidth == 0)
+                {
+                    Console.Write("\n           ");
+                    log += "\n           ";
+                }
             }
+
+            Log(log, true);
+        }
+
+        // Console.ReadLine() can jump to the next row if our message is long enough
+        // But we need padding so it looks aesthetic
+        // [date] name: text bla bla
+        //              bla bla bla
+        // Also we log the prettified string 
+        private void PrettifyText(int cursorX, int cursorY, string finalMessage)
+        {
+            Console.SetCursorPosition(cursorX, cursorY);
+
+            string log = "";
+
+            for (int i = 0, j = 1; i < finalMessage.Length; i++, j++)
+            {
+                Console.Write(finalMessage[i]);
+                log += finalMessage[i];
+
+                // New line and left padding for long texts
+                if (j % lineWidth == 0)
+                {
+                    Console.Write("\n           ");
+                    log += "\n           ";
+                }
+            }
+
+            Log(log + '\n', true);
+
+            Console.WriteLine();
         }
 
         public void Logo()
