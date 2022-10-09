@@ -134,7 +134,7 @@ namespace MessageClient
         public bool Handshaking()
         {
             // Status text
-            Log(DateTime.Now.ToString("[HH:mm:ss] ") + "Connecting...");
+            LogAndWrite(DateTime.Now.ToString("[HH:mm:ss] ") + "Connecting...");
 
             // After successfull connection get the stream ready to read and write
             stream = client.GetStream();
@@ -147,10 +147,10 @@ namespace MessageClient
             welcomeMessage = ReceiveMessage();
 
             // Status text
-            Log(DateTime.Now.ToString("[HH:mm:ss] ") + "Connection established with: " + client.Client.RemoteEndPoint + " (" + partnerName + ")");
-            Log(DateTime.Now.ToString("[HH:mm:ss] ") + "Welcome message: '" + welcomeMessage + "' received");
-            Log(DateTime.Now.ToString("[HH:mm:ss] ") + "Conversation started: " + DateTime.Now.ToString());
-            Log(DateTime.Now.ToString("[HH:mm:ss] ") + "Send your first message");
+            LogAndWrite(DateTime.Now.ToString("[HH:mm:ss] ") + "Connection established with: " + client.Client.RemoteEndPoint + " (" + partnerName + ")");
+            LogAndWrite(DateTime.Now.ToString("[HH:mm:ss] ") + "Welcome message: '" + welcomeMessage + "' received");
+            LogAndWrite(DateTime.Now.ToString("[HH:mm:ss] ") + "Conversation started: " + DateTime.Now.ToString());
+            LogAndWrite(DateTime.Now.ToString("[HH:mm:ss] ") + "Send your first message");
 
             // This means the connection has been established, we can continue, see Run(); method
             return true;
@@ -176,10 +176,10 @@ namespace MessageClient
                         int cursorY = Console.CursorTop;
 
                         // We didn't send the timestamp to the client
-                        // So we have a finalMessage for e.g: [17:42:57] name: HI! <- we log this
-                        string finalMessage = DateTime.Now.ToString("[HH:mm:ss] ") + name + ": ";
+                        // So we have a formattedMessageInput for e.g: [17:42:57] name: HI! <- we log this
+                        string formattedMessageInput = DateTime.Now.ToString("[HH:mm:ss] ") + name + ": ";
 
-                        Console.Write(finalMessage);
+                        Console.Write(formattedMessageInput);
 
                         // Read method's comment
                         string message = ReadAndReturnValidMessage(Console.CursorLeft, Console.CursorTop);
@@ -187,10 +187,10 @@ namespace MessageClient
                         // And an actual message we send, in this example: "HI!"
                         SendMessage(message);
 
-                        finalMessage += message;
+                        formattedMessageInput += message;
 
                         // Read method's comment
-                        PrettifyText(cursorX, cursorY, finalMessage);
+                        PrettifyText(cursorX, cursorY, formattedMessageInput);
 
                         status = false;
                         continue;
@@ -214,8 +214,8 @@ namespace MessageClient
             {
                 // Connection lost to server, prepare to exit
                 setTextColor(1);
-                Log(DateTime.Now.ToString("[HH:mm:ss] ") + "Lost connection to server");
-                Log(DateTime.Now.ToString("[HH:mm:ss] ") + "Press enter to exit...");
+                LogAndWrite(DateTime.Now.ToString("[HH:mm:ss] ") + "Lost connection to server");
+                LogAndWrite(DateTime.Now.ToString("[HH:mm:ss] ") + "Press enter to exit...");
                 Console.ReadLine();
             }
         }
@@ -381,16 +381,16 @@ namespace MessageClient
         }
 
         // Logs everything in a .txt then WriteLine
-        public void Log(string message)
+        public void LogAndWrite(string message)
         {
-            Console.WriteLine(message);
-
             string filename = "log_" + timestamp + ".txt";
             File.AppendAllText(filename, message + '\n');
+
+            Console.WriteLine(message);
         }
 
-        // Logs everything but without WriteLine
-        public void Log(string message, bool noWriteLine)
+        // Log without WriteLine
+        public void Log(string message)
         {
             string filename = "log_" + timestamp + ".txt";
             File.AppendAllText(filename, message);
@@ -417,7 +417,7 @@ namespace MessageClient
                 }
             }
 
-            Log(log, true);
+            Log(log);
         }
 
         // Console.ReadLine() can jump to the next row if our message is long enough
@@ -444,7 +444,7 @@ namespace MessageClient
                 }
             }
 
-            Log(log + '\n', true);
+            Log(log + '\n');
 
             Console.WriteLine();
         }
@@ -453,11 +453,11 @@ namespace MessageClient
         {
             // Small Slant
             Console.Clear();
-            Log("   __  ___                          ________          __ ");
-            Log("  /  |/  /__ ___ ___ ___ ____ ____ / ___/ (_)__ ___  / /_");
-            Log(" / /|_/ / -_|_-<(_-</ _ `/ _ `/ -_) /__/ / / -_) _ \\/ __/");
-            Log("/_/  /_/\\__/___/___/\\_,_/\\_, /\\__/\\___/_/_/\\__/_//_/\\__/ ");
-            Log("                        /___/                            by erwin");
+            LogAndWrite("   __  ___                          ________          __ ");
+            LogAndWrite("  /  |/  /__ ___ ___ ___ ____ ____ / ___/ (_)__ ___  / /_");
+            LogAndWrite(" / /|_/ / -_|_-<(_-</ _ `/ _ `/ -_) /__/ / / -_) _ \\/ __/");
+            LogAndWrite("/_/  /_/\\__/___/___/\\_,_/\\_, /\\__/\\___/_/_/\\__/_//_/\\__/ ");
+            LogAndWrite("                        /___/                            by erwin");
         }
 
         public void setTextColor(byte color)

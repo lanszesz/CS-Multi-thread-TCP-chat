@@ -117,9 +117,9 @@ namespace MessageServer
         public bool Handshaking()
         {
             // Status text
-            Log(DateTime.Now.ToString("[HH:mm:ss] ") + "Server started");
-            Log(DateTime.Now.ToString("[HH:mm:ss] ") + "Your name: " + name + " Listening Port: " + listeningPort);
-            Log(DateTime.Now.ToString("[HH:mm:ss] ") + "Waiting for connection...");
+            LogAndWrite(DateTime.Now.ToString("[HH:mm:ss] ") + "Server started");
+            LogAndWrite(DateTime.Now.ToString("[HH:mm:ss] ") + "Your name: " + name + " Listening Port: " + listeningPort);
+            LogAndWrite(DateTime.Now.ToString("[HH:mm:ss] ") + "Waiting for connection...");
 
             // Waiting for client to connect
             client = server.AcceptTcpClient();
@@ -135,10 +135,10 @@ namespace MessageServer
             SendMessage(welcomeMessage);
 
             // Status text
-            Log(DateTime.Now.ToString("[HH:mm:ss] ") + "Connection established with: " + client.Client.RemoteEndPoint + " (" + partnerName + ")");
-            Log(DateTime.Now.ToString("[HH:mm:ss] ") + "Welcome message '" + welcomeMessage + "' sent");
-            Log(DateTime.Now.ToString("[HH:mm:ss] ") + "Conversation started: " + DateTime.Now.ToString());
-            Log(DateTime.Now.ToString("[HH:mm:ss] ") + "Awaiting first response...");
+            LogAndWrite(DateTime.Now.ToString("[HH:mm:ss] ") + "Connection established with: " + client.Client.RemoteEndPoint + " (" + partnerName + ")");
+            LogAndWrite(DateTime.Now.ToString("[HH:mm:ss] ") + "Welcome message '" + welcomeMessage + "' sent");
+            LogAndWrite(DateTime.Now.ToString("[HH:mm:ss] ") + "Conversation started: " + DateTime.Now.ToString());
+            LogAndWrite(DateTime.Now.ToString("[HH:mm:ss] ") + "Awaiting first response...");
 
             // This means the connection has been established, we can continue, see Run(); method
             return true;
@@ -160,13 +160,13 @@ namespace MessageServer
                         // We are the senders now!
 
                         // We didn't send the timestamp to the client
-                        // So we have a finalMessage for e.g: [17:42:57] lanses: HI! <- we log this
+                        // So we have a formattedMessageInput for e.g: [17:42:57] lanses: HI! <- we log this
                         int cursorX = Console.CursorLeft;
                         int cursorY = Console.CursorTop;
 
-                        string finalMessage = DateTime.Now.ToString("[HH:mm:ss] ") + name + ": ";
+                        string formattedMessageInput = DateTime.Now.ToString("[HH:mm:ss] ") + name + ": ";
 
-                        Console.Write(finalMessage);
+                        Console.Write(formattedMessageInput);
 
                         // Read method's comment
                         string message = ReadAndReturnValidMessage(Console.CursorLeft, Console.CursorTop);
@@ -174,10 +174,10 @@ namespace MessageServer
                         // And an actual message we send, in this example: "HI!"
                         SendMessage(message);
 
-                        finalMessage += message;
+                        formattedMessageInput += message;
 
                         // Read method's comment
-                        PrettifyText(cursorX, cursorY, finalMessage);
+                        PrettifyText(cursorX, cursorY, formattedMessageInput);
 
                         status = false;
                         continue;
@@ -201,8 +201,8 @@ namespace MessageServer
             {
                 // Connection lost to client, prepare to exit
                 setTextColor(1);
-                Log(DateTime.Now.ToString("[HH:mm:ss] ") + "Lost connection to client");
-                Log(DateTime.Now.ToString("[HH:mm:ss] ") + "Press enter to exit...");
+                LogAndWrite(DateTime.Now.ToString("[HH:mm:ss] ") + "Lost connection to client");
+                LogAndWrite(DateTime.Now.ToString("[HH:mm:ss] ") + "Press enter to exit...");
                 Console.ReadLine();
             }
         }
@@ -345,19 +345,18 @@ namespace MessageServer
         }
 
         // Logs everything in a .txt then WriteLine
-        public void Log(string message)
+        public void LogAndWrite(string message)
         {
-            Console.WriteLine(message);
-
             string filename = "log_" + timestamp + ".txt";
             File.AppendAllText(filename, message + '\n');
+
+            Console.WriteLine(message);
         }
 
-        // Logs everything but without WriteLine
-        public void Log(string message, bool noWriteLine)
+        // Log without WriteLine
+        public void Log(string message)
         {
             string filename = "log_" + timestamp + ".txt";
-
             File.AppendAllText(filename, message);
         }
 
@@ -382,7 +381,7 @@ namespace MessageServer
                 }
             }
 
-            Log(log, true);
+            Log(log);
         }
 
         // Console.ReadLine() can jump to the next row if our message is long enough
@@ -409,7 +408,7 @@ namespace MessageServer
                 }
             }
 
-            Log(log + '\n', true);
+            Log(log + '\n');
 
             Console.WriteLine();
         }
@@ -418,11 +417,11 @@ namespace MessageServer
         {
             // Small Slant
             Console.Clear();
-            Log("   __  ___                          ____                    ");
-            Log("  /  |/  /__ ___ ___ ___ ____ ____ / __/__ _____  _____ ____");
-            Log(" / /|_/ / -_|_-<(_-</ _ `/ _ `/ -_)\\ \\/ -_) __/ |/ / -_) __/");
-            Log("/_/  /_/\\__/___/___/\\_,_/\\_, /\\__/___/\\__/_/  |___/\\__/_/   ");
-            Log("                        /___/                                by erwin");
+            LogAndWrite("   __  ___                          ____                    ");
+            LogAndWrite("  /  |/  /__ ___ ___ ___ ____ ____ / __/__ _____  _____ ____");
+            LogAndWrite(" / /|_/ / -_|_-<(_-</ _ `/ _ `/ -_)\\ \\/ -_) __/ |/ / -_) __/");
+            LogAndWrite("/_/  /_/\\__/___/___/\\_,_/\\_, /\\__/___/\\__/_/  |___/\\__/_/   ");
+            LogAndWrite("                        /___/                                by erwin");
         }
 
         public void setTextColor(byte color)
