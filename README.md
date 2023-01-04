@@ -1,3 +1,1 @@
-A little bit buggy but a lot issues are solved here :P
-
-Also it's in hungarian, but it's not that hard to understand/translate stuff
+A little bit buggy but a lot of issues are solved here, it has some great advancements :P
