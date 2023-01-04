@@ -1,3 +1,3 @@
-# tcpChat
+A little bit buggy but a lot issues are solved here :P
 
-Kéne még logó
+Also it is in hungarian, but it is not that hard to understand/translate stuff
